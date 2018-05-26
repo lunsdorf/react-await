@@ -1,4 +1,5 @@
 import * as React from "react";
+import PromiseProxy from "./promise-proxy";
 
 export type PendingProps = {
   children: () => JSX.Element;
@@ -13,7 +14,7 @@ export type ResolvedProps = {
 };
 
 export type AwaitProps = {
-  children?: React.ReactNode |  React.ReactNode[];
+  children?: React.ReactNode | React.ReactNode[];
   promise: Promise<any>;
 };
 
@@ -23,9 +24,7 @@ export type AwaitContext = {
   reason?: Error;
 };
 
-export type AwaitState = AwaitContext & {
-  promise?: Promise<any>;
-};
+export type AwaitState = AwaitContext;
 
 enum PromiseState {
   Pending = "Pending",
@@ -33,72 +32,77 @@ enum PromiseState {
   Rejected = "Rejected",
 }
 
-const PromiseContext = React.createContext<AwaitContext>({ state: PromiseState.Pending });
+const promiseProxy = new PromiseProxy();
+const promiseContext = React.createContext<AwaitContext>({
+  state: PromiseState.Pending,
+});
 
 export function Pending({ children }: PendingProps): JSX.Element {
   return (
-    <PromiseContext.Consumer>
+    <promiseContext.Consumer>
       {({ state }) => PromiseState.Pending === state ? children() : null}
-    </PromiseContext.Consumer>
+    </promiseContext.Consumer>
   );
 }
 
 export function Resolved({ children }: ResolvedProps): JSX.Element {
   return (
-    <PromiseContext.Consumer>
+    <promiseContext.Consumer>
       {({ state, result }) => PromiseState.Resolved === state ? children(result) : null}
-    </PromiseContext.Consumer>
+    </promiseContext.Consumer>
   );
 }
 
 export function Rejected({ children }: RejectedProps): JSX.Element {
   return (
-    <PromiseContext.Consumer>
+    <promiseContext.Consumer>
       {({ state, reason }) => PromiseState.Rejected === state ? children(reason as Error) : null}
-    </PromiseContext.Consumer>
+    </promiseContext.Consumer>
   );
 }
 
 export class Await extends React.PureComponent<AwaitProps, AwaitState> {
-  public static getDerivedStateFromProps(nextProps: AwaitProps, prevState: AwaitState): null | AwaitState {
-    return prevState && prevState.promise === nextProps.promise
-      ? null
-      : {
-        promise: nextProps.promise,
-        reason: void 0,
-        result: void 0,
-        state: PromiseState.Pending,
-      };
-  }
+  public state: AwaitState = {
+    state: PromiseState.Pending,
+    result: void 0,
+    reason: void 0,
+  };
 
   public componentDidMount(): void {
     this.bindPromise(this.props.promise);
   }
 
   public componentDidUpdate(prevProps: AwaitProps): void {
-    const {promise} = this.state;
+    const { promise } = this.props;
 
-    if (promise && promise !== prevProps.promise) {
-      this.bindPromise(promise);
+    if (promise !== prevProps.promise) {
+      this.bindPromise(promise, prevProps.promise);
+
+      this.setState({
+        reason: void 0,
+        result: void 0,
+        state: PromiseState.Pending,
+      });
     }
   }
 
   public render() {
     return (
-      <PromiseContext.Provider value={this.state}>
+      <promiseContext.Provider value={this.state}>
         {this.props.children}
-      </PromiseContext.Provider>
+      </promiseContext.Provider>
     );
   }
 
-  private bindPromise(promise: Promise<any>) {
-    promise.then(
-      result => (promise === this.state.promise)
-        ? this.setState({ promise, state: PromiseState.Resolved, reason: void 0, result })
-        : void 0,
-      reason => (promise === this.state.promise)
-        ? this.setState({ promise, state: PromiseState.Rejected, result: void 0, reason })
-        : void 0
+  private bindPromise(promise: Promise<any>, prevPromise?: Promise<any>) {
+    if (prevPromise) {
+      promiseProxy.remove(prevPromise);
+    }
+
+    promiseProxy.add(
+      promise,
+      result => this.setState({ state: PromiseState.Resolved, reason: void 0, result }),
+      reason => this.setState({ state: PromiseState.Rejected, result: void 0, reason })
     );
   }
 }
