@@ -2,6 +2,7 @@
   "name": "react-await",
   "version": "1.0.0",
   "license": "MIT",
+  "author": "Sören Lünsdorf <code@lunsdorf.com>",
   "main": "./lib/react-await.js",
   "typings": "./lib/react-await.d.ts",
   "scripts": {
