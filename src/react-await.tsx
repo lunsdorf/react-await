@@ -5,8 +5,8 @@ export type PendingProps = {
   children: () => JSX.Element;
 };
 
-export type RejectedProps<T = Error> = {
-  children: (reason: T) => JSX.Element;
+export type RejectedProps<E = Error> = {
+  children: (reason: E) => JSX.Element;
 };
 
 export type ResolvedProps<T = any> = {
@@ -104,7 +104,7 @@ export class Await extends React.PureComponent<AwaitProps, AwaitState> {
     proxy.add(
       promise,
       result => this.setState({ state: PromiseState.Resolved, reason: void 0, result }),
-      reason => this.setState({ state: PromiseState.Rejected, result: void 0, reason })
+      reason => this.setState({ state: PromiseState.Rejected, reason, result: void 0 })
     );
   }
 }
