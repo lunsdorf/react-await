@@ -5,6 +5,13 @@
   "author": "Sören Lünsdorf <code@lunsdorf.com>",
   "main": "./lib/react-await.js",
   "typings": "./lib/react-await.d.ts",
+  "keywords": [
+    "async",
+    "await",
+    "jsx",
+    "promise",
+    "react"
+  ],
   "scripts": {
     "build": "rimraf ./lib && npm run lint && tsc -p ./tsconfig.json",
     "lint": "tslint -p ./tsconfig.json -c ./tslint.json ./src/**/*.ts*",
