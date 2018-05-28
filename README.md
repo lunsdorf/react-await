@@ -28,8 +28,8 @@ function MyIP() {
 
   return (
     <Await promise={promise}>
-      <Resolved>{ip => <div>My IP: {ip}!</div>}</Resolved>
-      <Rejected>{error => <div>{error.message}!</div>}</Rejected>
+      <Resolved>{res => <div>My IP: {res.ip}</div>}</Resolved>
+      <Rejected>{err => <div>{err.message}!</div>}</Rejected>
       <Pending><div>Fetching …</div></Pending>
     </Await>
   );
