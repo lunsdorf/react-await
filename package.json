@@ -6,7 +6,7 @@
   "main": "./lib/react-await.js",
   "typings": "./lib/react-await.d.ts",
   "scripts": {
-    "build": "tsc -p ./tsconfig.json",
+    "build": "rimraf ./lib && npm run lint && tsc -p ./tsconfig.json",
     "lint": "tslint -p ./tsconfig.json -c ./tslint.json ./src/**/*.ts*",
     "prepublish": "npm run build"
   },
@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "@types/react": "^16.3.14",
+    "rimraf": "^2.6.2",
     "tslint": "^5.10.0",
     "typescript": "^2.8.3"
   }
