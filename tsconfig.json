@@ -10,6 +10,7 @@
     "lib": [
       "dom",
       "es5",
+      "es2015",
       "scripthost"
     ],
     "module": "commonjs",
@@ -33,5 +34,9 @@
   "include": [
     "**/*.ts",
     "**/*.tsx"
+  ],
+  "exclude": [
+    "**/*.test.ts",
+    "**/*.test.tsx"
   ]
 }

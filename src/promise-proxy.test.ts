@@ -1,4 +1,4 @@
-const { default: PromiseProxy } = require("./promise-proxy");
+import PromiseProxy from "./promise-proxy";
 
 describe("PromiseProxy", () => {
   it("should be a class constructor", async () => {

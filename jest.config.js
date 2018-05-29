@@ -8,10 +8,15 @@ module.exports = {
   roots: [
     "<rootDir>",
   ],
+  setupTestFrameworkScriptFile: "<rootDir>/jest.setup.js",
+  snapshotSerializers: [
+    "enzyme-to-json/serializer"
+  ],
   testMatch: [
-    "**/*.test.js",
+    "**/*.test.ts",
+    "**/*.test.tsx",
   ],
   transform: {
-    "^.+\\.(t|j)sx?$": "ts-jest",
+    "^.+\\.tsx?$": "ts-jest",
   },
 };

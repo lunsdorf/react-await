@@ -1,5 +1,9 @@
 src/
 
 .editorconfig
+jest.setup.js
+jest.config.js
 tsconfig.json
 tslint.json
+
+*.tgz
