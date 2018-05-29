@@ -12,6 +12,10 @@
     "promise",
     "react"
   ],
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/lunsdorf/react-await.git"
+  },
   "scripts": {
     "build": "rimraf ./lib && tsc -p ./tsconfig.json",
     "lint": "tslint -p ./tsconfig.json -c ./tslint.json ./src/**/*.ts*",
