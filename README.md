@@ -21,6 +21,7 @@ $ yarn add react react-await
 Basic example using fetch:
 
 ```jsx
+import React from "react";
 import {Await, Pending, Rejected, Resolved} from "react-await";
 
 function MyIP() {
@@ -28,8 +29,8 @@ function MyIP() {
 
   return (
     <Await promise={promise}>
-      <Resolved>{res => <div>My IP: {res.ip}</div>}</Resolved>
-      <Rejected>{err => <div>{err.message}!</div>}</Rejected>
+      <Resolved>{json => <div>My IP: {json.ip}</div>}</Resolved>
+      <Rejected>{error => <div>{error.message}!</div>}</Rejected>
       <Pending><div>Fetching …</div></Pending>
     </Await>
   );
