@@ -47,5 +47,7 @@ rendering the `Resolved`, `Rejected` and `Pending` components in nested JSX
 structures or multiple times. The `Await` component will automatically cleanup
 callback functions when passing a new promise as property or unmounting.
 
+Try it on [codesandbox.io](https://codesandbox.io/s/zkrz2rkp5l)!
+
 ## License
 [MIT](https://github.com/lunsdorf/react-await/blob/master/LICENSE.md)
