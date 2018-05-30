@@ -15,7 +15,7 @@ export type ResolvedProps<T = any> = {
 
 export type AwaitProps<T = any> = {
   children?: React.ReactNode | React.ReactNode[];
-  promise: Promise<T>;
+  promise?: Promise<T>;
 };
 
 export type AwaitContext<T = any, E = Error> = {
@@ -88,21 +88,29 @@ export class Await extends React.PureComponent<AwaitProps, AwaitState> {
   public componentDidUpdate(prevProps: AwaitProps): void {
     const { promise } = this.props;
 
-    if (promise !== prevProps.promise) {
-      proxy.remove(prevProps.promise);
-
-      this.bindPromise(promise);
-
-      this.setState({
-        reason: void 0,
-        result: void 0,
-        state: PromiseState.Pending,
-      });
+    if (promise === prevProps.promise) {
+      return;
     }
+
+    if (prevProps.promise) {
+      proxy.remove(prevProps.promise);
+    }
+
+    this.bindPromise(promise);
+
+    this.setState({
+      reason: void 0,
+      result: void 0,
+      state: PromiseState.Pending,
+    });
   }
 
   public componentWillUnmount(): void {
-    proxy.remove(this.props.promise);
+    const { promise } = this.props;
+
+    if (promise) {
+      proxy.remove(promise);
+    }
   }
 
   public render() {
@@ -113,7 +121,11 @@ export class Await extends React.PureComponent<AwaitProps, AwaitState> {
     );
   }
 
-  private bindPromise(promise: Promise<any>, prevPromise?: Promise<any>) {
+  private bindPromise(promise?: Promise<any>) {
+    if (!promise) {
+      return;
+    }
+
     proxy.add(
       promise,
       result => this.setState({ state: PromiseState.Resolved, reason: void 0, result }),
