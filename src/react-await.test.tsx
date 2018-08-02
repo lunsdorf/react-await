@@ -1,14 +1,14 @@
 import * as React from "react";
-import { mount } from "enzyme";
+import * as TestRenderer from "react-test-renderer";
 import { Await, Resolved } from "./react-await";
 
 describe("<Await/>", () => {
   // skipped until enzyme supports react 16.3 context
-  it.skip("should render <Resolve/> component", async () => {
+  it("should render <Resolve/> component", async () => {
     const outcome = {};
     const promise = Promise.resolve(outcome);
     const children = jest.fn(() => null);
-    const component = mount(
+    const component = TestRenderer.create(
       <Await promise={promise}>
         <Resolved>{children}</Resolved>
       </Await>
