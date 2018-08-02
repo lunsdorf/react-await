@@ -13,7 +13,7 @@ describe("PromiseProxy", () => {
     const resolvedFn = jest.fn();
     const rejectedFn = jest.fn();
 
-    proxy.add(promise, resolvedFn, rejectedFn);
+    proxy.add({}, promise, resolvedFn, rejectedFn);
 
     await promise;
 
@@ -32,8 +32,8 @@ describe("PromiseProxy", () => {
     const resolved2Fn = jest.fn();
     const rejectedFn = jest.fn();
 
-    proxy.add(promise1, resolved1Fn, rejectedFn);
-    proxy.add(promise2, resolved2Fn, rejectedFn);
+    proxy.add({}, promise1, resolved1Fn, rejectedFn);
+    proxy.add({}, promise2, resolved2Fn, rejectedFn);
 
     expect(proxy.promises.length).toBe(2);
 
@@ -54,7 +54,7 @@ describe("PromiseProxy", () => {
     const resolvedFn = jest.fn();
     const rejectedFn = jest.fn();
 
-    proxy.add(promise, resolvedFn, rejectedFn);
+    proxy.add({}, promise, resolvedFn, rejectedFn);
 
     promise.catch(() => {
       expect(rejectedFn).toHaveBeenCalledTimes(1);
@@ -66,12 +66,13 @@ describe("PromiseProxy", () => {
 
   it("should not invoke resolve callback after promise was removed", async () => {
     const proxy = new PromiseProxy();
+    const component = {};
     const promise = Promise.resolve({});
     const resolvedFn = jest.fn();
     const rejectedFn = jest.fn();
 
-    proxy.add(promise, resolvedFn, rejectedFn);
-    proxy.remove(promise);
+    proxy.add(component, promise, resolvedFn, rejectedFn);
+    proxy.remove(component, promise);
 
     await promise;
 
@@ -83,12 +84,13 @@ describe("PromiseProxy", () => {
   it("should not invoke reject callback after promise was removed", async () => {
     const proxy = new PromiseProxy();
     const outcome = new Error("error");
+    const component = {};
     const promise = Promise.reject(outcome);
     const resolvedFn = jest.fn();
     const rejectedFn = jest.fn();
 
-    proxy.add(promise, resolvedFn, rejectedFn);
-    proxy.remove(promise);
+    proxy.add(component, promise, resolvedFn, rejectedFn);
+    proxy.remove(component, promise);
 
     promise.catch(() => {
       expect(resolvedFn).not.toHaveBeenCalled();
@@ -99,19 +101,21 @@ describe("PromiseProxy", () => {
 
   it("should remove correct promise", async () => {
     const proxy = new PromiseProxy();
+    const component1 = {};
+    const component2 = {};
     const promise1 = Promise.resolve();
     const promise2 = Promise.resolve();
     const resolved1Fn = jest.fn();
     const resolved2Fn = jest.fn();
     const rejectedFn = jest.fn();
 
-    proxy.add(promise1, resolved1Fn, rejectedFn);
-    proxy.remove(promise1);
-    proxy.add(promise2, resolved2Fn, rejectedFn);
+    proxy.add(component1, promise1, resolved1Fn, rejectedFn);
+    proxy.add(component2, promise2, resolved2Fn, rejectedFn);
+    proxy.remove(component1, promise1);
 
     expect(proxy.promises.length).toBe(1);
-    expect(proxy.promises).not.toContain(promise1);
-    expect(proxy.promises).toContainEqual(promise2);
+    expect(proxy.promises).not.toContain([component1, promise1]);
+    expect(proxy.promises).toContainEqual([component2, promise2]);
 
     await Promise.all([promise1, promise2]);
 

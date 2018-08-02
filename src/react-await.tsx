@@ -93,7 +93,7 @@ export class Await extends React.PureComponent<AwaitProps, AwaitState> {
     }
 
     if (prevProps.promise) {
-      proxy.remove(prevProps.promise);
+      proxy.remove(this, prevProps.promise);
     }
 
     this.bindPromise(promise);
@@ -109,7 +109,7 @@ export class Await extends React.PureComponent<AwaitProps, AwaitState> {
     const { promise } = this.props;
 
     if (promise) {
-      proxy.remove(promise);
+      proxy.remove(this, promise);
     }
   }
 
@@ -127,6 +127,7 @@ export class Await extends React.PureComponent<AwaitProps, AwaitState> {
     }
 
     proxy.add(
+      this,
       promise,
       result => this.setState({ state: PromiseState.Resolved, reason: void 0, result }),
       reason => this.setState({ state: PromiseState.Rejected, reason, result: void 0 })

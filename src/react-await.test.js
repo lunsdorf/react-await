@@ -18,7 +18,7 @@ describe("<Await/>", () => {
     expect(children).toHaveBeenCalledTimes(1);
     expect(children).toHaveBeenCalledWith(outcome);
   });
-  
+
   it("should <Resolve/> unmounting other <Await/> with same promise", async () => {
     const outcome = {};
     const promise = Promise.resolve(outcome);
@@ -34,7 +34,7 @@ describe("<Await/>", () => {
         <Resolved>{children2}</Resolved>
       </Await>
     );
-    
+
     component2.unmount();
 
     await promise;
@@ -43,7 +43,7 @@ describe("<Await/>", () => {
     expect(children1).toHaveBeenCalledWith(outcome);
     expect(children2).not.toHaveBeenCalled();
   });
-  
+
   it("should <Resolve/> indiviually when updating other <Await/>", async () => {
     const outcome1 = {};
     const outcome2 = {};
@@ -61,7 +61,7 @@ describe("<Await/>", () => {
         <Resolved>{children2}</Resolved>
       </Await>
     );
-    
+
     component2.update(
       <Await promise={promise2}>
         <Resolved>{children2}</Resolved>
