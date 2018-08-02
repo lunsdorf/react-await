@@ -3,7 +3,6 @@ import * as TestRenderer from "react-test-renderer";
 import { Await, Resolved } from "./react-await";
 
 describe("<Await/>", () => {
-  // skipped until enzyme supports react 16.3 context
   it("should render <Resolve/> component", async () => {
     const outcome = {};
     const promise = Promise.resolve(outcome);
