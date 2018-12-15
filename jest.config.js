@@ -1,14 +1,13 @@
 module.exports = {
   globals: {
     "ts-jest": {
-      skipBabel: true,
-      tsConfigFile: "tsconfig.jest.json",
+      tsConfig: "tsconfig.jest.json",
     },
   },
   moduleFileExtensions: [
+    "js",
     "ts",
     "tsx",
-    "js",
   ],
   roots: [
     "<rootDir>",
@@ -19,4 +18,5 @@ module.exports = {
   transform: {
     ".(ts|tsx|js)": "ts-jest",
   },
-};
+  preset: "ts-jest/presets/js-with-ts",
+}
