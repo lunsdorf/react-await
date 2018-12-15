@@ -1,25 +1,28 @@
 import * as React from "react";
 import * as TestRenderer from "react-test-renderer";
-import { Await, Resolved } from "./react-await";
+import { Await, Resolved, Rejected, Then, PromiseState } from "./react-await";
 
 describe("<Await/>", () => {
-  it("should <Resolve/>", async () => {
+  it("should be <Resolved/>", async () => {
     const outcome = {};
     const promise = Promise.resolve(outcome);
-    const children = jest.fn(() => null);
+    const childrenResolved = jest.fn(() => null);
+    const childrenRejected = jest.fn(() => null);
     const component = TestRenderer.create(
       <Await promise={promise}>
-        <Resolved>{children}</Resolved>
+        <Resolved>{childrenResolved}</Resolved>
+        <Rejected>{childrenRejected}</Rejected>
       </Await>
     );
 
     await promise;
 
-    expect(children).toHaveBeenCalledTimes(1);
-    expect(children).toHaveBeenCalledWith(outcome);
+    expect(childrenRejected).toHaveBeenCalledTimes(0);
+    expect(childrenResolved).toHaveBeenCalledTimes(1);
+    expect(childrenResolved).toHaveBeenCalledWith(outcome);
   });
 
-  it("should <Resolve/> unmounting other <Await/> with same promise", async () => {
+  it("should be <Resolved/> unmounting other <Await/> with same promise", async () => {
     const outcome = {};
     const promise = Promise.resolve(outcome);
     const children1 = jest.fn(() => null);
@@ -44,7 +47,7 @@ describe("<Await/>", () => {
     expect(children2).not.toHaveBeenCalled();
   });
 
-  it("should <Resolve/> indiviually when updating other <Await/>", async () => {
+  it("should be <Resolved/> indiviually when updating other <Await/>", async () => {
     const outcome1 = {};
     const outcome2 = {};
     const promise1 = Promise.resolve(outcome1);
@@ -75,5 +78,60 @@ describe("<Await/>", () => {
     expect(children1).toHaveBeenCalledWith(outcome1);
     expect(children2).toHaveBeenCalledTimes(1);
     expect(children2).toHaveBeenCalledWith(outcome2);
+  });
+
+  it("should be <Rejected/>", async () => {
+    try {
+      const promise = Promise.reject(new Error("error"));
+      const childrenResolved = jest.fn(() => null);
+      const childrenRejected = jest.fn(() => null);
+      const component = TestRenderer.create(
+        <Await promise={promise}>
+          <Resolved>{childrenResolved}</Resolved>
+          <Rejected>{childrenRejected}</Rejected>
+        </Await>
+      );
+
+      await promise;
+    } catch (error) {
+      expect(childrenResolved).toHaveBeenCalledTimes(0);
+      expect(childrenRejected).toHaveBeenCalledTimes(1);
+      expect(childrenRejected).toHaveBeenCalledWith(error);
+    }
+  });
+
+  it("should resolve <Then/>", async () => {
+    const outcome = {};
+    const promise = Promise.resolve(outcome);
+    const children = jest.fn(() => null);
+    const component = TestRenderer.create(
+      <Await promise={promise}>
+        <Then>{children}</Then>
+      </Await>
+    );
+
+    await promise;
+
+    expect(children).toHaveBeenCalledTimes(2);
+    expect(children).toHaveBeenNthCalledWith(1, PromiseState.Pending, undefined, undefined);
+    expect(children).toHaveBeenNthCalledWith(2, PromiseState.Resolved, outcome, undefined);
+  });
+
+  it("should reject <Then/>", async () => {
+    try {
+      const promise = Promise.reject(new Error("error"));
+      const children = jest.fn(() => null);
+      const component = TestRenderer.create(
+        <Await promise={promise}>
+          <Then>{children}</Then>
+        </Await>
+      );
+
+      await promise;
+    } catch (error) {
+      expect(children).toHaveBeenCalledTimes(2);
+      expect(children).toHaveBeenNthCalledWith(1, PromiseState.Pending, undefined, undefined);
+      expect(children).toHaveBeenNthCalledWith(2, PromiseState.Rejected, undefined, error);
+    }
   });
 });

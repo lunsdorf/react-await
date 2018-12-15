@@ -13,23 +13,27 @@ export type ResolvedProps<T = any> = {
   children: React.ReactNode | React.ReactNode[] | ((result: T) => JSX.Element);
 };
 
+export type ThenProps<T = any, E = Error> = {
+  children: ((state: PromiseState, result?: T, reason?: E) => JSX.Element);
+};
+
 export type AwaitProps<T = any> = {
   children?: React.ReactNode | React.ReactNode[];
   promise?: Promise<T>;
 };
 
 export type AwaitContext<T = any, E = Error> = {
-  state: string;
+  state: PromiseState;
   result?: T;
   reason?: E;
 };
 
 export type AwaitState = AwaitContext;
 
-enum PromiseState {
-  Pending = "Pending",
-  Resolved = "Resolved",
-  Rejected = "Rejected",
+export enum PromiseState {
+  Pending = "pending",
+  Resolved = "resolved",
+  Rejected = "rejected",
 }
 
 const proxy = new PromiseProxy();
@@ -70,6 +74,14 @@ export function Rejected({ children }: RejectedProps): JSX.Element {
         ? isFunction(children) ? children(reason as Error) : children
         : null
       }
+    </context.Consumer>
+  );
+}
+
+export function Then({ children }: ThenProps): JSX.Element {
+  return (
+    <context.Consumer>
+      {({ state, result, reason }) => children(state, result, reason as Error)}
     </context.Consumer>
   );
 }
