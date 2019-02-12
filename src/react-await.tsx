@@ -2,19 +2,19 @@ import * as React from "react";
 import PromiseProxy from "./promise-proxy";
 
 export type PendingProps = {
-  children: React.ReactNode | React.ReactNode[] | (() => JSX.Element);
+  children: React.ReactNode | React.ReactNode[] | (() => null | JSX.Element);
 };
 
 export type RejectedProps<E = Error> = {
-  children: React.ReactNode | React.ReactNode[] | ((reason: E) => JSX.Element);
+  children: React.ReactNode | React.ReactNode[] | ((reason: E) => null | JSX.Element);
 };
 
 export type ResolvedProps<T = any> = {
-  children: React.ReactNode | React.ReactNode[] | ((result: T) => JSX.Element);
+  children: React.ReactNode | React.ReactNode[] | ((result: T) => null | JSX.Element);
 };
 
 export type ThenProps<T = any, E = Error> = {
-  children: ((state: PromiseState, result?: T, reason?: E) => JSX.Element);
+  children: (state: PromiseState, result?: T, reason?: E) => null | JSX.Element;
 };
 
 export type AwaitProps<T = any> = {
